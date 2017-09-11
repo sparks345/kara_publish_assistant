@@ -3,5 +3,10 @@
  */
 
 import * as rdm from "./rdm";
-debugger;
+
+require('electron-cookies');
+
+const ipcRenderer = require('electron').ipcRenderer;
+ipcRenderer.send("setCookie", "test...test...");
+
 rdm.init();

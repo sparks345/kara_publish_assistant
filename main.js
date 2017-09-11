@@ -9,22 +9,37 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const url = require('url');
+const ipcMain = require('electron').ipcMain;
+
+// const CookieManage = require(path.join(__dirname, 'dist/lib/CookieManage.js'));
 
 const MAIN_URL = url.format(url.format({
     pathname: path.join(__dirname, 'app/index.html'),
     protocol: 'file:',
     slashes: true
 }));
-const LOGIN_URL = "http://passport.oa.com/modules/passport/signin.ashx?url=http://musiclog.oa.com/mobilepackage/index.php?showtime=2892000&appkey=8d938e301cd64526a4691d660cf6b1f6";
-const MAIN_LOGIN_ON_URL = "http://musiclog.oa.com/mobilepackage/index.php";
+const LOGIN_URL = "http://rdm.oa.com/cas/login?service=http%3A%2F%2Frdm.oa.com%2Fci%2Fshiro-cas";//"http://passport.oa.com/modules/passport/signin.ashx?url=http://musiclog.oa.com/mobilepackage/index.php?showtime=2892000&appkey=8d938e301cd64526a4691d660cf6b1f6";
+const MAIN_LOGIN_ON_URL = "http://rdm.oa.com/ci/";//"http://musiclog.oa.com/mobilepackage/index.php";
 
 let mainWindow;
 
+// const {session, app, BrowserWindow} = require('electron');
+const session = electron.session;
+
+// call back from setCookie of render process.
+ipcMain.on("setCookie", function (event) {
+    console.warn("setCookie from render.");
+});
 
 function createWindow() {
+    if (mainWindow != null) return;
+
     mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow.openDevTools({mode: "bottom"});
 
     mainWindow.loadURL(LOGIN_URL);
+
+    getAllCookies();
 
     mainWindow.on('close', function () {
         mainWindow = null;
@@ -33,12 +48,24 @@ function createWindow() {
     mainWindow.webContents.on('dom-ready', function () {
         console.warn("XX");
         if (mainWindow.getURL().startsWith(MAIN_LOGIN_ON_URL)) {
+            // debugger;
             mainWindow.loadURL(MAIN_URL);
         }
+
     });
 
-    const remoteWindow = require('electron').BrowserWindow;
-    remoteWindow.addDevToolsExtension();
+    // const remoteWindow = require('electron').BrowserWindow;
+    // remoteWindow.addDevToolsExtension();
+}
+
+function getAllCookies() {
+    session.defaultSession.cookies.get({}, (error, cookies) => {
+        // Cookies can be accessed here using cookies variable
+        if (error == null) {
+            global.allCookies = cookies;
+            // CookieManage.cache(cookies);
+        }
+    });
 }
 
 
