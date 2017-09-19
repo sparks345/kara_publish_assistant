@@ -2,7 +2,7 @@
  * Created by jinjingcao on 2017/9/4.
  */
 
-import * as rdm from "./rdm";
+import * as rdm from "./mod/rdm";
 
 require('electron-cookies');
 

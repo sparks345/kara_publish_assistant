@@ -34,7 +34,7 @@ ipcMain.on("setCookie", function (event) {
 function createWindow() {
     if (mainWindow != null) return;
 
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({width: 1000, height: 1200});
     mainWindow.openDevTools({mode: "bottom"});
 
     mainWindow.loadURL(LOGIN_URL);
